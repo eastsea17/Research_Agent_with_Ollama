@@ -1,4 +1,4 @@
-# Multi-Agent Research Topic Brainstorming Tool
+# Research Topic Brainstorming Tool
 
 [![Python](https://img.shields.io/badge/Python-3.8%2B-blue.svg)](https://www.python.org/)
 [![Ollama](https://img.shields.io/badge/Ollama-Required-green.svg)](https://ollama.ai/)
