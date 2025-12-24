@@ -1,4 +1,4 @@
-# Multi-Agent Research Topic Brainstorming Tool
+# Research Topic Brainstorming Tool
 
 [![Python](https://img.shields.io/badge/Python-3.8%2B-blue.svg)](https://www.python.org/)
 [![Ollama](https://img.shields.io/badge/Ollama-Required-green.svg)](https://ollama.ai/)
@@ -32,7 +32,7 @@
 
 ## 🎯 Overview
 
-This tool uses a **multi-agent AI system** to help researchers brainstorm novel research topics. By analyzing academic papers from the OpenAlex database, it generates, evaluates, and prioritizes research topics across multiple dimensions (originality, feasibility, impact).
+This tool uses a **AI system** to help researchers brainstorm novel research topics. By analyzing academic papers from the OpenAlex database, it generates, evaluates, and prioritizes research topics across multiple dimensions (originality, feasibility, impact).
 
 The system employs **local LLMs via Ollama**, making it cost-free and privacy-preserving while providing powerful research assistance. It is optimized for local hardware (e.g., Apple Silicon) by actively managing memory usage. Additionally, it supports **Ollama Cloud** for accessing larger, more powerful models like `deepseek-v3.1:671b-cloud` and `gpt-oss:120b-cloud` without local hardware constraints.
 
