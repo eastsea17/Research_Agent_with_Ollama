@@ -93,18 +93,81 @@ The system employs **local LLMs via Ollama**, making it cost-free and privacy-pr
 
 ```mermaid
 graph TD
-    A[User Input: Keyword] --> B[Paper Collector Agent]
-    B --> C[OpenAlex API]
-    C --> D[Vector DB Creation]
-    D --> E[Topic Generator Agent]
-    E --> F[Generated Topics]
-    F --> G[Evaluator Agent]
-    G --> H[Scored Topics]
-    H --> I[Report Generator English]
-    H --> J[Translator Agent]
-    J --> K[Report Generator Korean]
-    I --> L[HTML Report EN]
-    K --> M[HTML Report KO]
+    %% Style Definitions
+    classDef user fill:#f9f9f9,stroke:#333,stroke-width:2px,color:#000
+    classDef agent fill:#e1f5fe,stroke:#01579b,stroke-width:2px,color:#01579b,rx:10,ry:10
+    classDef data fill:#fff3e0,stroke:#e65100,stroke-width:2px,color:#e65100,stroke-dasharray: 5 5
+    classDef ext fill:#fce4ec,stroke:#880e4f,stroke-width:2px,color:#880e4f
+    classDef ai fill:#e8f5e9,stroke:#1b5e20,stroke-width:2px,color:#1b5e20
+    classDef file fill:#fff,stroke:#333,stroke-width:1px,color:#333,shape:document
+
+    %% 1. User Interaction Layer
+    subgraph UI_Layer [💻 User Interface]
+        User([User / Researcher]):::user
+        Input{Input Method}:::user
+        Config[config.py / Settings]:::user
+    end
+
+    %% 2. Agent Orchestration Layer
+    subgraph Agent_Orchestration [🤖 Agent Workflow Pipeline]
+        direction TB
+        Collector(<b>Paper Collector Agent</b><br/>Fetching & Indexing):::agent
+        Generator(<b>Topic Generator Agent</b><br/>RAG & Brainstorming):::agent
+        Evaluator(<b>Topic Evaluator Agent</b><br/>Scoring & Filtering):::agent
+        Translator(<b>Translator Agent</b><br/>Localization):::agent
+    end
+
+    %% 3. Data & Infrastructure Layer
+    subgraph Data_Infra [💾 Data & Infrastructure]
+        OpenAlex[☁️ OpenAlex API]:::ext
+        CSV[(Raw Papers CSV)]:::file
+        ChromaDB[(Chroma Vector DB)]:::data
+        HTML_EN[📄 Report_EN.html]:::file
+        HTML_KO[📄 Report_KO.html]:::file
+    end
+
+    %% 4. AI Model Layer (Ollama)
+    subgraph Ollama_Service [🦙 Ollama Local Infra]
+        EmbedModel[[nomic-embed-text]]:::ai
+        GenModel[[deepseek-r1:14b]]:::ai
+        EvalModel[[gpt-oss:20b]]:::ai
+    end
+
+    %% Flow Definitions
+    
+    %% User Input Flow
+    User --> Input
+    Input -- "Streamlit UI or CLI" --> Collector
+    Config -.-> Collector
+    Config -.-> Generator
+
+    %% Step 1: Collection & Embedding
+    Collector -- "1. Keyword Search" --> OpenAlex
+    OpenAlex -- "Metadata & Abstract" --> Collector
+    Collector -- "Save Raw Data" --> CSV
+    Collector -- "Generate Embeddings" --> EmbedModel
+    EmbedModel -.-> Collector
+    Collector -- "Store Vectors" --> ChromaDB
+
+    %% Step 2: Topic Generation (RAG)
+    ChromaDB -- "2. Retrieve Context (RAG)" --> Generator
+    Generator -- "Prompt (Chain of Thought)" --> GenModel
+    GenModel -.-> Generator
+
+    %% Step 3: Evaluation
+    Generator -- "Generated Topics" --> Evaluator
+    Evaluator -- "Evaluate Criteria" --> EvalModel
+    EvalModel -.-> Evaluator
+    Evaluator -- "Final Scores" --> HTML_EN
+
+    %% Step 4: Translation & Reporting
+    Evaluator -- "Selected Topics" --> Translator
+    Translator -- "Translate Content" --> EvalModel
+    Translator -- "Localized Content" --> HTML_KO
+
+    %% Memory Management Note
+    note_opt[⚡ Automatic Memory Optimization<br/>Models are unloaded immediately after use]
+    Ollama_Service -.- note_opt
 ```
 
 ### Agent Responsibilities
